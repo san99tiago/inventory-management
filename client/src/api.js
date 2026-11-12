@@ -1,8 +1,13 @@
 import axios from 'axios'
+import { demoApi } from './demo/demoApi'
 
 const API_BASE_URL = 'http://localhost:8001/api'
 
-export const api = {
+// 2026-11-12: VITE_DEMO=true builds the app for GitHub Pages, where no backend runs.
+// Every component imports `api`, so this one switch changes the data source for the whole app.
+export const DEMO_MODE = import.meta.env.VITE_DEMO === 'true'
+
+export const httpApi = {
   async getInventory(filters = {}) {
     const params = new URLSearchParams()
     if (filters.warehouse && filters.warehouse !== 'all') params.append('warehouse', filters.warehouse)
@@ -118,5 +123,17 @@ export const api = {
   async getSubmittedRestockOrders() {
     const response = await axios.get(`${API_BASE_URL}/restocking/orders`)
     return response.data
+  },
+
+  async getQuarterlyReports() {
+    const response = await axios.get(`${API_BASE_URL}/reports/quarterly`)
+    return response.data
+  },
+
+  async getMonthlyTrends() {
+    const response = await axios.get(`${API_BASE_URL}/reports/monthly-trends`)
+    return response.data
   }
 }
+
+export const api = DEMO_MODE ? demoApi : httpApi

@@ -56,6 +56,7 @@
       <main class="main-content">
         <router-view />
       </main>
+      <SiteFooter />
     </div>
 
     <ProfileDetailsModal
@@ -84,6 +85,7 @@ import ProfileMenu from './components/ProfileMenu.vue'
 import ProfileDetailsModal from './components/ProfileDetailsModal.vue'
 import TasksModal from './components/TasksModal.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import SiteFooter from './components/SiteFooter.vue'
 
 const SIDEBAR_KEY = 'sidebarCollapsed'
 const NARROW_BREAKPOINT = 1024
@@ -126,7 +128,8 @@ export default {
     ProfileMenu,
     ProfileDetailsModal,
     TasksModal,
-    LanguageSwitcher
+    LanguageSwitcher,
+    SiteFooter
   },
   setup() {
     const { currentUser } = useAuth()

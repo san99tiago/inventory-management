@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { api } from '../api'
 
 export default {
   name: 'Reports',
@@ -153,14 +153,13 @@ export default {
 
         // Fetch quarterly data
         console.log('Fetching quarterly data...')
-        const quarterlyResponse = await axios.get('http://localhost:8001/api/reports/quarterly')
-        this.quarterlyData = quarterlyResponse.data
+        // 2026-11-12: api methods return the data directly (no axios response wrapper).
+        this.quarterlyData = await api.getQuarterlyReports()
         console.log('Quarterly data:', this.quarterlyData)
 
         // Fetch monthly data
         console.log('Fetching monthly data...')
-        const monthlyResponse = await axios.get('http://localhost:8001/api/reports/monthly-trends')
-        this.monthlyData = monthlyResponse.data
+        this.monthlyData = await api.getMonthlyTrends()
         console.log('Monthly data:', this.monthlyData)
 
         // Calculate summary stats
