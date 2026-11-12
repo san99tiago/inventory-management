@@ -1,15 +1,28 @@
 <template>
   <div class="app">
-    <aside class="sidebar" :class="{ collapsed: isCollapsed }">
-      <div class="logo">
-        <svg class="logo-mark" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" clip-rule="evenodd" :d="icons.inventory" />
-        </svg>
-        <div class="logo-text" :class="{ 'visually-hidden': isCollapsed }">
-          <h1>{{ t('nav.companyName') }}</h1>
-          <span class="subtitle">{{ t('nav.subtitle') }}</span>
+    <header class="top-nav">
+      <div class="nav-container">
+        <div class="logo">
+          <svg class="logo-mark" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" :d="icons.inventory" />
+          </svg>
+          <div class="logo-text">
+            <h1>{{ t('nav.companyName') }}</h1>
+            <span class="subtitle">{{ t('nav.subtitle') }}</span>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <LanguageSwitcher />
+          <ProfileMenu
+            @show-profile-details="showProfileDetails = true"
+            @show-tasks="showTasks = true"
+          />
         </div>
       </div>
+    </header>
+
+    <div class="app-row">
+    <aside class="sidebar" :class="{ collapsed: isCollapsed }">
       <nav id="sidebar-nav" class="sidebar-nav">
         <router-link
           v-for="item in navItems"
@@ -43,20 +56,12 @@
     </aside>
 
     <div class="app-body">
-      <header class="top-nav">
-        <div class="nav-container">
-          <LanguageSwitcher />
-          <ProfileMenu
-            @show-profile-details="showProfileDetails = true"
-            @show-tasks="showTasks = true"
-          />
-        </div>
-      </header>
       <FilterBar />
       <main class="main-content">
         <router-view />
       </main>
       <SiteFooter />
+    </div>
     </div>
 
     <ProfileDetailsModal
@@ -270,7 +275,14 @@ body {
 
 .app {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.app-row {
+  flex: 1;
+  display: flex;
+  min-width: 0;
 }
 
 .app-body {
@@ -280,13 +292,19 @@ body {
   flex-direction: column;
 }
 
+/*
+ * 2026-11-12: The top bar is a fixed 70px tall and sticks at top: 0. The sidebar
+ * (top: 70px, height: calc(100vh - 70px)) and FilterBar (top: 70px, see FilterBar.vue)
+ * both stack below it, so their offsets depend on that 70px. If the bar height
+ * changes, update all three. Layering: top bar 120 > sidebar 110 > FilterBar 90.
+ */
 .sidebar {
   position: sticky;
-  top: 0;
+  top: 70px;
   align-self: flex-start;
   flex-shrink: 0;
   width: 240px;
-  height: 100vh;
+  height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -306,7 +324,7 @@ body {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 120;
 }
 
 .nav-container {
@@ -314,23 +332,24 @@ body {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
   padding: 0 2rem;
   height: 70px;
 }
 
-.nav-container > .language-switcher {
-  margin-right: 1rem;
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  height: 70px;
-  padding: 0 1.125rem;
-  border-bottom: 1px solid #e2e8f0;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .logo-mark {
@@ -449,6 +468,10 @@ body {
 }
 
 @media (max-width: 640px) {
+  .subtitle {
+    display: none;
+  }
+
   .nav-container,
   .main-content {
     padding-left: 1rem;
