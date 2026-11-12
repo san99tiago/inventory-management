@@ -10,9 +10,9 @@ tests/
 ├── backend/            # Backend API tests
 │   ├── conftest.py     # Test fixtures and configuration
 │   ├── test_inventory.py      # Inventory endpoint tests (10 tests)
-│   ├── test_orders.py         # Orders endpoint tests (15 tests)
 │   ├── test_dashboard.py      # Dashboard endpoint tests (13 tests)
-│   └── test_misc_endpoints.py # Demand, backlog, spending tests (13 tests)
+│   ├── test_misc_endpoints.py # Demand, backlog, spending tests (17 tests)
+│   └── test_restocking.py     # Restocking recommendations and submitted orders (26 tests)
 └── README.md           # This file
 ```
 

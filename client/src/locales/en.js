@@ -6,6 +6,7 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -126,6 +127,19 @@ export default {
       status: 'Status',
       expectedDelivery: 'Expected Delivery',
       actualDelivery: 'Actual Delivery'
+    },
+    // 2026-11-12: Submitted restocking orders, shown on the Orders tab
+    submitted: {
+      title: 'Submitted Orders',
+      description: 'Restocking orders waiting for delivery',
+      empty: 'No restocking orders submitted in this session yet.',
+      orderNumber: 'Order Number',
+      submittedDate: 'Submitted',
+      items: 'Items',
+      total: 'Total',
+      leadTime: 'Lead Time',
+      expectedDelivery: 'Expected Delivery',
+      days: '{count} days'
     }
   },
 
@@ -206,7 +220,36 @@ export default {
     backordered: 'Backordered',
     inStock: 'In Stock',
     lowStock: 'Low Stock',
-    adequate: 'Adequate'
+    adequate: 'Adequate',
+    submitted: 'Submitted'
+  },
+
+  // 2026-11-12: Restocking tab
+  restocking: {
+    title: 'Restocking',
+    description: 'Plan purchases from the demand forecast within your budget',
+    budget: 'Available budget',
+    budgetHint: 'Move the slider to set the budget. Steps are $500.',
+    fullCost: 'Full forecast cost',
+    recommended: 'Recommended items',
+    noItems: 'No items fit this budget. Increase the budget to see recommendations.',
+    priority: 'Priority',
+    quantity: 'Qty',
+    unitCost: 'Unit Cost',
+    lineTotal: 'Line Total',
+    leadTime: 'Lead Time',
+    days: '{count} days',
+    supplier: 'Supplier',
+    orderTotal: 'Order total',
+    remaining: 'Remaining budget',
+    selectedCount: '{count} selected',
+    placeOrder: 'Place Order',
+    placingOrder: 'Placing order...',
+    orderPlaced: 'Order {orderNumber} submitted. Expected delivery in {days} days.',
+    viewOrders: 'View in Orders',
+    orderFailed: 'Could not submit the order: ',
+    loadFailed: 'Could not load recommendations: ',
+    nothingSelected: 'Select at least one item to place an order.'
   },
 
   // Trends
