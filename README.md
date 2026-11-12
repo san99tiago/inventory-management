@@ -2,6 +2,10 @@
 
 A full-stack demo application for a Claude Code workshop: inventory management, order tracking, demand forecasting, and analytics for factory operations.
 
+> **DEMO.** This project is a demo built for the Anthropic Hackathon. It is a simple example of Claude Code features. All data is mock data. Not for production use.
+
+**Live demo:** https://san99tiago.github.io/inventory-management/ (runs entirely in the browser, see [Live demo](#live-demo)).
+
 ![Dashboard](docs/dashboard-screenshot.png)
 
 ## Tech Stack
@@ -117,6 +121,33 @@ sequenceDiagram
 - Submitted orders live in memory. Restarting the backend clears them.
 - There is no stock state, so an item that was just ordered is recommended again. The Restocking tab resets the budget after a successful order.
 - Submitted orders are kept apart from `orders`, so dashboard totals, reports, and the Orders stat cards are unchanged by a submission.
+
+## Live demo
+
+The GitHub Pages site runs the frontend in **demo mode**. No backend is needed:
+
+- `VITE_DEMO=true` swaps the HTTP client (`client/src/api.js`) for an in-browser adapter (`client/src/demo/demoApi.js`). The adapter reproduces the FastAPI logic (filters, dashboard, reports, restocking) against the same JSON data.
+- The router uses hash URLs in demo mode (`#/restocking`), because GitHub Pages cannot serve deep links in history mode.
+- Restocking orders, and tasks created in the demo, live in browser memory and reset on reload.
+
+The `.github/workflows/pages.yml` workflow builds and deploys the demo on every push to `main`. Build it locally with:
+
+```bash
+cd client
+VITE_DEMO=true VITE_BASE_PATH=/inventory-management/ npm run build
+```
+
+```mermaid
+flowchart LR
+    subgraph Local development
+        V1[Vue app :3000] -->|axios| B1[FastAPI :8001]
+    end
+    subgraph GitHub Pages demo
+        V2[Vue app static build] --> A[demoApi.js adapter]
+        A --> J[server/data/*.json]
+    end
+    W[pages.yml on push to main] -->|VITE_DEMO=true| V2
+```
 
 ## Sidebar Navigation
 
