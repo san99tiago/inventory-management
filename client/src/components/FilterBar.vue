@@ -119,11 +119,22 @@ export default {
   gap: 1rem;
 }
 
+/* 2026-11-12: Phone gutter, matching .main-content (16px) so filters align with the page content. */
+@media (max-width: 640px) {
+  .filters-container {
+    padding: 0 1rem;
+  }
+}
+
+/* 2026-11-12: Wrap the filter groups. With the sidebar taking 240px (64px when collapsed),
+   four selects plus the reset button no longer fit on one row at 1024px, and the page scrolled sideways. */
 .filters-grid {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem 1rem;
   flex: 1;
+  min-width: 0;
 }
 
 .filter-group {

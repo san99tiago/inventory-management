@@ -6,6 +6,7 @@ export default {
     orders: '注文',
     finance: '財務',
     demandForecast: '需要予測',
+    restocking: '補充発注',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -126,6 +127,19 @@ export default {
       status: 'ステータス',
       expectedDelivery: '予定配達日',
       actualDelivery: '実際の配達日'
+    },
+    // 2026-11-12: Submitted restocking orders, shown on the Orders tab
+    submitted: {
+      title: '送信済み補充注文',
+      description: '配達待ちの補充注文',
+      empty: 'このセッションで送信された補充注文はまだありません。',
+      orderNumber: '注文番号',
+      submittedDate: '送信日',
+      items: '品目',
+      total: '合計',
+      leadTime: 'リードタイム',
+      expectedDelivery: '予定配達日',
+      days: '{count}日'
     }
   },
 
@@ -206,7 +220,36 @@ export default {
     backordered: 'バックオーダー',
     inStock: '在庫あり',
     lowStock: '在庫僅少',
-    adequate: '適量'
+    adequate: '適量',
+    submitted: '送信済み'
+  },
+
+  // 2026-11-12: Restocking tab
+  restocking: {
+    title: '補充発注',
+    description: '需要予測に基づき予算内で発注を計画',
+    budget: '利用可能予算',
+    budgetHint: 'スライダーで予算を設定します。刻みは$500です。',
+    fullCost: '予測全量の費用',
+    recommended: '推奨品目',
+    noItems: 'この予算に収まる品目がありません。予算を増やすと推奨が表示されます。',
+    priority: '優先度',
+    quantity: '数量',
+    unitCost: '単価',
+    lineTotal: '小計',
+    leadTime: 'リードタイム',
+    days: '{count}日',
+    supplier: '仕入先',
+    orderTotal: '発注合計',
+    remaining: '残り予算',
+    selectedCount: '{count}件選択中',
+    placeOrder: '発注する',
+    placingOrder: '発注中...',
+    orderPlaced: '注文 {orderNumber} を送信しました。予定配達まで{days}日です。',
+    viewOrders: '注文画面で確認',
+    orderFailed: '注文を送信できませんでした: ',
+    loadFailed: '推奨の読み込みに失敗しました: ',
+    nothingSelected: '発注するには品目を1つ以上選択してください。'
   },
 
   // Trends

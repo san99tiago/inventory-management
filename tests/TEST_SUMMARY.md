@@ -70,6 +70,27 @@ All backend API tests are passing with **55 tests** covering the entire applicat
 - ✅ Root endpoint returns API info
 - ✅ Message and version structure
 
+### 8. Restocking Endpoints (26 tests, `test_restocking.py`)
+<!-- 2026-11-12: Added with the Restocking feature. Expected values come from the demo data and RESTOCK_CATALOG. -->
+- ✅ Budget 0 returns no items and the full forecast cost (91,804.48)
+- ✅ Budget 10,000 skips WDG-001 (does not fit) and funds GSK-203 only
+- ✅ Skipped items keep their priority position
+- ✅ Budget 30,000 funds WDG-001, GSK-203 and FLT-405 (26,733.00 total)
+- ✅ The exact full cost funds all 9 items with nothing remaining
+- ✅ Ranking: trend first, then growth, then SKU
+- ✅ Quantity equals forecasted demand
+- ✅ Totals equal the sum of line totals (cents arithmetic)
+- ✅ Invalid budgets (negative, non-numeric, nan, inf) return 422
+- ✅ Demand forecasts are not mutated by ranking
+- ✅ Valid order returns 201 with a server-recomputed total
+- ✅ Client-sent prices are ignored
+- ✅ Order lead time is the longest item lead time
+- ✅ Order numbers follow RST-YYYY-NNNN and increment
+- ✅ Unknown SKU, duplicate SKU, and over-budget orders return 400, and over-budget orders are not stored
+- ✅ Invalid quantities and empty item lists return 422
+- ✅ Submitted orders list newest first
+- ✅ Submitting does not change /api/orders, the dashboard summary, the quarterly report, or /api/demand
+
 ## Key Testing Principles
 
 ### ✅ No Hardcoded Values
@@ -101,9 +122,10 @@ python -m pytest backend/ -v
 ```
 
 ## Test Results
-- **Total Tests**: 55
-- **Passed**: 55 ✅
+<!-- 2026-11-12: Counts from `python -m pytest backend/` run in server/.venv with pytest 9.2.0 -->
+- **Total Tests**: 66
+- **Passed**: 66 ✅
 - **Failed**: 0
-- **Warnings**: 3 (configuration-related, non-critical)
+- **Warnings**: 1 (starlette: httpx test client deprecation, not from this code)
 
 All tests validate the **actual implementation** without cheating or hardcoding success values!

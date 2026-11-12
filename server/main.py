@@ -1,8 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
+from threading import Lock
 from typing import List, Optional
-from pydantic import BaseModel
-from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
+from pydantic import BaseModel, Field
+from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders, submitted_orders
+from restocking import build_order, build_recommendations
 
 app = FastAPI(title="Factory Inventory Management System")
 
@@ -119,6 +122,61 @@ class CreatePurchaseOrderRequest(BaseModel):
     unit_cost: float
     expected_delivery_date: str
     notes: Optional[str] = None
+
+# 2026-11-12: Restocking models. Prices are never accepted from the client;
+# unit cost always comes from RESTOCK_CATALOG in restocking.py.
+class RestockRecommendation(BaseModel):
+    sku: str
+    name: str
+    trend: str
+    current_demand: int
+    forecasted_demand: int
+    growth_pct: Optional[float] = None  # None when growth is infinite (current demand 0)
+    quantity: int
+    unit_cost: float
+    line_total: float
+    supplier_name: str
+    lead_time_days: int
+    priority: int
+
+class RestockRecommendationsResponse(BaseModel):
+    budget: float
+    full_cost: float
+    total_cost: float
+    remaining_budget: float
+    items: List[RestockRecommendation]
+
+class RestockLine(BaseModel):
+    sku: str = Field(min_length=1, max_length=32)
+    quantity: int = Field(gt=0, le=100000)
+
+class CreateRestockOrderRequest(BaseModel):
+    budget: float = Field(ge=0, le=10_000_000, allow_inf_nan=False)
+    items: List[RestockLine] = Field(min_length=1)
+
+class RestockOrderLine(BaseModel):
+    sku: str
+    name: str
+    quantity: int
+    unit_cost: float
+    line_total: float
+    supplier_name: str
+    lead_time_days: int
+
+class RestockOrder(BaseModel):
+    id: str
+    order_number: str
+    status: str
+    budget: float
+    order_date: str
+    expected_delivery: str
+    lead_time_days: int
+    total_value: float
+    items: List[RestockOrderLine]
+
+# 2026-11-12: FastAPI runs sync routes in a threadpool, so two concurrent POSTs
+# could compute the same order number. This lock makes "compute number + append" atomic.
+restock_lock = Lock()
 
 # API endpoints
 @app.get("/")
@@ -303,6 +361,32 @@ def get_monthly_trends():
     result = list(months.values())
     result.sort(key=lambda x: x['month'])
     return result
+
+@app.get("/api/restocking/recommendations", response_model=RestockRecommendationsResponse)
+def get_restock_recommendations(
+    budget: float = Query(0.0, ge=0, le=10_000_000, allow_inf_nan=False)
+):
+    """Recommend forecast items to restock within a budget (budget=0 returns full_cost only)"""
+    return build_recommendations(demand_forecasts, budget)
+
+@app.post("/api/restocking/orders", response_model=RestockOrder, status_code=201)
+def create_restock_order(payload: CreateRestockOrderRequest):
+    """Submit a restocking order. Prices are recomputed on the server and checked against the budget."""
+    lines = [(line.sku, line.quantity) for line in payload.items]
+    with restock_lock:
+        try:
+            order = build_order(lines, payload.budget, submitted_orders, datetime.now())
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+        submitted_orders.append(order)
+    return order
+
+@app.get("/api/restocking/orders", response_model=List[RestockOrder])
+def get_submitted_restock_orders():
+    """List submitted restocking orders, newest first"""
+    # Insertion order is chronological, so reversing gives newest first.
+    # Sorting by order_date would tie within the same second.
+    return list(reversed(submitted_orders))
 
 if __name__ == "__main__":
     import uvicorn

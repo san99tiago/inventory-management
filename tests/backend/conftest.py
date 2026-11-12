@@ -21,6 +21,20 @@ def client():
         yield test_client
 
 
+@pytest.fixture(autouse=True)
+def reset_submitted_restock_orders():
+    """Clear in-memory restocking orders before and after every test.
+
+    2026-11-12: submitted_orders lives in process memory, so without this a POST
+    in one test would leak into the next. Clear in place: main.py holds a reference.
+    """
+    import mock_data
+
+    mock_data.submitted_orders.clear()
+    yield
+    mock_data.submitted_orders.clear()
+
+
 @pytest.fixture
 def sample_inventory_item():
     """Sample inventory item for testing."""
